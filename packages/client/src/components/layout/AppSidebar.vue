@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { NButton, NModal, useMessage } from "naive-ui";
+import { NModal } from "naive-ui";
 import { useAppStore } from "@/stores/hermes/app";
 import ModelSelector from "./ModelSelector.vue";
 import ProfileSelector from "./ProfileSelector.vue";
@@ -12,7 +12,6 @@ import { useSessionSearch } from '@/composables/useSessionSearch'
 import { changelog } from "@/data/changelog";
 
 const { t } = useI18n();
-const message = useMessage();
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
@@ -38,19 +37,6 @@ function isGroupCollapsed(key: string) {
 
 function handleNav(key: string) {
   router.push({ name: key });
-}
-
-async function handleUpdate() {
-  const ok = await appStore.doUpdate();
-  if (ok) {
-    message.success(t('sidebar.updateSuccess'), { duration: 5000 });
-  } else {
-    message.error(t('sidebar.updateFailed'));
-  }
-}
-
-function handleReloadClient() {
-  appStore.reloadClient();
 }
 
 function handleLogout() {
@@ -120,10 +106,6 @@ function openChangelog() {
             </svg>
             <span>{{ t("sidebar.search") }}</span>
           </button>
-          <a class="nav-item fun-link" href="https://apikey.fun/register?aff=LIBAPI" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            <span>{{ t('sidebar.apiRelay') }}</span>
-          </a>
         </div>
       </div>
 
@@ -310,12 +292,6 @@ function openChangelog() {
         <span class="version-text" @click="openChangelog">Web UI v{{ appStore.serverVersion || "0.1.0" }}</span>
         <ThemeSwitch />
       </div>
-      <NButton v-if="appStore.clientOutdated" type="warning" size="tiny" block class="update-btn" @click="handleReloadClient">
-        {{ t('sidebar.reloadClientVersion', { version: appStore.serverVersion }) }}
-      </NButton>
-      <NButton v-if="appStore.updateAvailable" type="primary" size="tiny" block class="update-btn" :loading="appStore.updating" @click="handleUpdate">
-        {{ appStore.updating ? t('sidebar.updating') : t('sidebar.updateVersion', { version: appStore.latestVersion }) }}
-      </NButton>
     </div>
 
     <!-- Changelog modal -->
